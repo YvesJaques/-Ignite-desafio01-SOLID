@@ -1,0 +1,272 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Use Manager Documentation",
+        "description": "This is an API User Manager",
+        "version": "1.0.0",
+        "contact": {
+            "email": "ymoraisjaques@gmail.com"
+        }
+    },
+    "paths": {
+        "/users": {
+            "post": {
+                "tags": ["User"],
+                "summary": "Create a user",
+                "description": "Creates a new user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": {
+                                    "name": "user name sample",
+                                    "email": "usermail@sample.com"
+                                }
+                            }
+                        }
+                    },
+                    "required": "true",
+                    "description": "Required fields"
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created",                        
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "example": {
+                                        "id": "d940de16-592a-4f71-bd16-30055915fbb6",
+                                        "admin": false,
+                                        "name": "user name sample",
+                                        "email": "usermail@sample.com",
+                                        "created_at": "2021-04-12T03:23:12.509Z",
+                                        "updated_at": "2021-04-12T03:23:12.509Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "An user with this email already exists!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",                                    
+                                    "example": {
+                                        "error": "An user with this email already exists!"
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": ["User"],
+                "summary": "List all users",
+                "description": "Only `admins` can list users",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "user_id",
+                        "schema": {                        
+                            "type": "string",
+                            "format": "uuid"
+                        },                      
+                        "required": "true"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": [
+                                    {
+                                    "id": "d940de16-592a-4f71-bd16-30055915fbb6",
+                                    "admin": true,
+                                    "name": "user name sample",
+                                    "email": "usermail@sample.com",
+                                    "created_at": "2021-04-12T03:23:12.509Z",
+                                    "updated_at": "2021-04-12T03:23:15.509Z"
+                                    },
+                                    {
+                                    "id": "c7c4215f-bbe7-4e6f-af53-836915a8bada",
+                                    "admin": false,
+                                    "name": "user2 name sample",
+                                    "email": "usermail2@sample.com",
+                                    "created_at": "2021-04-12T03:23:20.509Z",
+                                    "updated_at": "2021-04-12T03:23:23.509Z"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "User provided in header is not admin or doesn't exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",                                    
+                                    "example": {
+                                        "error": "Only admins can list users!"
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }          
+        },
+        "/users/{user_id}": {
+            "get": {
+                "tags": ["User"],
+                "summary": "Show user profile",
+                "description": "Shows an user profile",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "user_id",
+                        "schema": {                        
+                            "type": "string",
+                            "format": "uuid"
+                        },              
+                        "required": "true"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "example": {
+                                        "id": "c7c4215f-bbe7-4e6f-af53-836915a8bada",
+                                        "admin": false,
+                                        "name": "user2 name sample",
+                                        "email": "usermail2@sample.com",
+                                        "created_at": "2021-04-12T03:23:20.509Z",
+                                        "updated_at": "2021-04-12T03:23:23.509Z"
+                                    }                                
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found by id provided",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",                                    
+                                    "example": {
+                                        "error": "User doesn't exist!"
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/admin": {        
+            "patch": {
+                "tags": ["User"],
+                "summary": "Turn user into admin",
+                "description": "Turns an user into an admin",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "user_id",
+                        "schema": {                        
+                            "type": "string",
+                            "format": "uuid"
+                        },              
+                        "required": "true"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "email": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "example": {
+                                        "id": "d940de16-592a-4f71-bd16-30055915fbb6",
+                                        "admin": true,
+                                        "name": "user name sample",
+                                        "email": "usermail@sample.com",
+                                        "created_at": "2021-04-12T03:23:12.509Z",
+                                        "updated_at": "2021-04-12T03:23:15.509Z"
+                                    }                
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found by id provided",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",                                    
+                                    "example": {
+                                        "error": "User doesn't exist!"
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+}
+
+
+
+
